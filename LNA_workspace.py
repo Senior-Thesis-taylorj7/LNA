@@ -29,3 +29,17 @@ def L(p,sigma):
         diag[i-1][i-1] = Diagonal(p,sigma,i)
     L = I - np.linalg.inv(diag)*Omega
     return L
+
+def Norm_Sequence(p,sigma):
+    Laplacian = L(p,sigma)
+    coords = Laplacian * p
+    Psigma = []
+    for i in range(0,len(coords)):
+        Psigma = Psigma+[normDiff(coords[i],[0,0])]
+    return Psigma
+
+def P_Sequence(p,sigma_list):
+    P_seq = []
+    for i in sigma_list:
+        P_seq = P_seq + [Norm_Sequence(p,i)]
+    return P_seq
