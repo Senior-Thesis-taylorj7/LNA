@@ -27,15 +27,15 @@ def L(p,sigma):
     diag = np.zeros([size,size])
     for i in range(1,size+1):
         diag[i-1][i-1] = Diagonal(p,sigma,i)
-    L = I - np.linalg.inv(diag)*Omega
+    L = I - np.dot(np.linalg.inv(diag),Omega)
     return L
 
 def Norm_Sequence(p,sigma):
     Laplacian = L(p,sigma)
-    coords = Laplacian * p
+    coords = np.dot(Laplacian,p)
     Psigma = []
     for i in range(0,len(coords)):
-        Psigma = Psigma+[normDiff(coords[i],[0,0])]
+        Psigma = Psigma+[round(normDiff(coords[i],[0,0]),2)]
     return Psigma
 
 def P_Sequence(p,sigma_list):
