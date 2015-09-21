@@ -43,3 +43,41 @@ def P_Sequence(p,sigma_list):
     for i in sigma_list:
         P_seq = P_seq + [Norm_Sequence(p,i)]
     return P_seq
+
+def S(p,i,q,j,sigma_list,nu):
+    if j == (len(q)-1) and i == 0:
+        return 0
+    if j == 0 and i == (len(p)-1):
+        return 0
+    if j == 0 and i == 0:
+        return 0
+    ls = []
+    if i > 0:
+        ls = ls + [S(p,i-1,q,j,sigma_list)]
+    if j > 0:
+        ls = ls + [S(p,i,q,j-1,sigma_list)]
+    if i > 0 and j > 0:
+        ls = ls + [S(p,i-1,q,j-1,sigma_list) + math.pow(math.e,nu*TauGen(p,q,sigma_list)[i][j])]
+    return max(ls)
+
+def LNAawk(p,q,sigma_list,nu):
+    return S(p,len(p)-1,q,len(q)-1,sigma_list,nu)/math.pow((len(p)-1)*(len(q)-1),.5)
+
+def S_single(p,i,q,j,sigma_list,nu,gap):
+    if i == 0 and j == len(q)-1:
+        return 0
+    if i == 0 and j == 0:
+        return 0
+    if i == len(p)-1 and j == 0:
+        return 0
+    ls = [0]
+    if i > 0:
+        if j > 0:
+            ls = ls + [S_single(p,i-1,q,j-1,sigma_list,nu,gap)+1-nu*TauGen(p,q,sigma_list)[i][j]]
+        ls = ls + [S_single(p,i-1,q,j,sigma_list,nu,gap)+g]
+    if j > 0:
+        ls = ls + [S_single(p,i,q,j-1,sigma_list,nu,gap)+g]
+    return max(ls)
+
+def LNAswk(p,q,sigma_list,nu,gap):
+    return max([S_single(p,i,q,j,sigma_list,nu,gap) for i in range(0,len(p)) for j in range(0,len(q))])
