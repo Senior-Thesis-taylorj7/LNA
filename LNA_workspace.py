@@ -1,6 +1,7 @@
 import math
 import numpy as np
 P = [[-2,1],[0,2],[2,1],[0,0],[-1,-2]]
+Q = [[2,3],[0,0],[1,1],[-1,-1],[-2,2]]
 
 def normDiff(p1,p2):
     return pow(pow(p1[0]-p2[0],2)+pow(p1[1]-p2[1],2),.5)
@@ -43,7 +44,17 @@ def P_Sequence(p,sigma_list):
     for i in sigma_list:
         P_seq = P_seq + [Norm_Sequence(p,i)]
     return P_seq
-
+def TauGen(Pbar,Qbar,sigma_list):
+    tau = [[0]*len(Qbar[0])]
+    for i in range(1,len(Pbar[0])):
+        row = [0]
+        for j in range(1,len(Qbar[0])):
+            su = 0
+            for indices in range(0,len(sigma_list)):
+                su = su + abs(Pbar[indices][i] - Qbar[indices][j]) + abs(Pbar[indices][i-1] + Qbar[indices][j-1]) + 3*abs((Pbar[indices][i]-Pbar[indices][i-1]) - (Qbar[indices][j]-Qbar[indices][j-1]))
+            row = row + [round(su,2)]
+        tau = tau + [row]
+    return 
 def S(p,i,q,j,sigma_list,nu):
     if j == (len(q)-1) and i == 0:
         return 0
@@ -59,10 +70,6 @@ def S(p,i,q,j,sigma_list,nu):
     if i > 0 and j > 0:
         ls = ls + [S(p,i-1,q,j-1,sigma_list) + math.pow(math.e,nu*TauGen(p,q,sigma_list)[i][j])]
     return max(ls)
-
-def LNAawk(p,q,sigma_list,nu):
-    return S(p,len(p)-1,q,len(q)-1,sigma_list,nu)/math.pow((len(p)-1)*(len(q)-1),.5)
-
 def S_single(p,i,q,j,sigma_list,nu,gap):
     if i == 0 and j == len(q)-1:
         return 0
@@ -78,6 +85,7 @@ def S_single(p,i,q,j,sigma_list,nu,gap):
     if j > 0:
         ls = ls + [S_single(p,i,q,j-1,sigma_list,nu,gap)+g]
     return max(ls)
-
+def LNAawk(p,q,sigma_list,nu):
+    return S(p,len(p)-1,q,len(q)-1,sigma_list,nu)/math.pow((len(p)-1)*(len(q)-1),.5)
 def LNAswk(p,q,sigma_list,nu,gap):
     return max([S_single(p,i,q,j,sigma_list,nu,gap) for i in range(0,len(p)) for j in range(0,len(q))])
